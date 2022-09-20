@@ -187,11 +187,11 @@
       <el-table-column label="施工单位" prop="Og" align="center" />
       <el-table-column label="行政区域" prop="district_area" align="center" />
       <el-table-column label="检测结果" prop="result" align="center">
-        <el-button class="resetBtn" @click="testResult()">检测结果</el-button>
+        <el-button class="testRsltBtn" @click="testResult()">检测结果</el-button>
       </el-table-column>
 
       <el-table-column label="操作" align="center">
-        <el-button class="resetBtn" @click="testResult()">批准</el-button>
+        <el-button class="resetBtn" @click="approval()">批准</el-button>
         <el-button class="resetBtn" @click="testResult()">操作</el-button>
       </el-table-column>
 
@@ -328,6 +328,12 @@ const router = useRouter();
 const testResult = () => {
   router.push({ path: "/evaluation" });
 };
+
+const approval = () => {
+  router.push({ path: "/approval"});
+}
+
+
 </script>
 
 <style scoped lang="scss">
@@ -364,4 +370,5 @@ const testResult = () => {
     position: relative;
     left: 50%;
 }
+
 </style>

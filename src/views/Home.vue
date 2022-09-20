@@ -13,7 +13,7 @@
       </el-header>
 
       <!--侧边区域-->
-      <el-container>
+      <el-container class="sideBar">
         <el-aside width="150px">
           <!--侧边栏菜单区域-->
           <el-menu
@@ -45,7 +45,7 @@
 
 <style scoped lang="scss">
 .home_container {
-  height: 100vh;
+  height: 100%;
 }
 
 .el-header {
@@ -74,8 +74,12 @@
 
 .el-aside {
   background-color: rgb(135 206 250);
-  height: 100vh;
+  
   width: 180px;
+}
+
+.sideBar{
+  height: 90vh;
 }
 
 .el-menu-item{

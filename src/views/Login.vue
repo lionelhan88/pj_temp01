@@ -56,8 +56,9 @@ const options = Array.from({ length: 10000 }).map((_, idx) => ({
       Shanghai Construction Engineering Test Information management system <br>
       <br>
     </div>
-      <img src="../assets/bg.png" class="inputImg"><img><div class="login_box">
-
+      <img src="../assets/bg.png" class="inputImg"><img>
+      
+      <div class="login_box">
       <!-- 登录表单区域 -->
       <el-form class="loginForm"   ref="ruleFormRef" :rules="rules"
       :model="ruleForm" size="formSize">
@@ -131,8 +132,10 @@ const options = Array.from({ length: 10000 }).map((_, idx) => ({
 }
  
 .inputImg{
-  width: 100%;
-  height: 89.2%;
+  display: flex;
+  width: 81%;
+  overflow: true;
+  height: 60%;
 }
 </style>
 
