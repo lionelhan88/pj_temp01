@@ -1,4 +1,3 @@
-
 <script setup lang="ts">
 import { reactive, ref, getCurrentInstance } from 'vue'
 import type { FormInstance, FormRules } from 'element-plus'
@@ -15,12 +14,7 @@ const ruleForm = reactive({
   pwd:'1'
 })
 
-const currentInstance = getCurrentInstance();
-const { $axios } = currentInstance.appContext.config.globalProperties;
-import { loginAction } from '@/api/apiRequest.ts'
-
-const dialogVisible = ref(false)
-
+//================================= 表单校验规则 ====================================
 const rules = reactive<FormRules>({
   userName: [
     { required: true, message: '请输入登录账号', trigger: 'blur' },
@@ -33,6 +27,16 @@ const rules = reactive<FormRules>({
   
 })
 
+
+//================================= axios请求 ====================================
+const currentInstance = getCurrentInstance();
+const { $axios } = currentInstance.appContext.config.globalProperties;
+import { loginAction } from '@/api/apiRequest.ts'
+
+const dialogVisible = ref(false)
+
+
+//================================= 登录及重置按钮 ====================================
 const submitForm = async (formEl: FormInstance | undefined) => {
   if (!formEl) return
   await formEl.validate((valid, fields) => {
@@ -70,9 +74,6 @@ const resetForm = (formEl: FormInstance | undefined) => {
   if (!formEl) return
   formEl.resetFields()
 }
-
-
-
 </script>
 
 <template>
