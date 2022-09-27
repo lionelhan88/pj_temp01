@@ -41,38 +41,31 @@ const submitForm = async (formEl: FormInstance | undefined) => {
   if (!formEl) return
   await formEl.validate((valid, fields) => {
     if (valid) {
-      console.log('submit!')
-
-      const { userName, pwd } = ruleForm
+      
+      const { userName, pwd } = ruleForm;
       const data = loginAction(ruleForm);
       
       data.then( response => {
         const a = response.data
-        console.log("test " + a.code)
-
         if(a.code == 200 ){
-          console.log("yes")
           router.push({ 
             name: "home",
           }); 
         }else{
           dialogVisible.value = true;
           formEl.resetFields()
-          console.log("no")
         }
-      })
+      });
 
-      console.log(data)
-     
     } else {
-      console.log('error submit!', fields)
+      console.log('error submit!', fields);
     }
   })
 }
 
 const resetForm = (formEl: FormInstance | undefined) => {
-  if (!formEl) return
-  formEl.resetFields()
+  if (!formEl) return;
+  formEl.resetFields();
 }
 </script>
 
