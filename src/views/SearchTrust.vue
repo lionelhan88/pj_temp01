@@ -14,40 +14,40 @@
       <el-row>
         <el-col :span="8"
           ><div class="grid-content ep-bg-purple" />
-          <el-form-item label="委托开始日期 :">
-            <el-config-provider :locale="locale">
+          <el-form-item label="委托开始日期 :" prop="startDate">
+           
               <el-date-picker
-                v-model="startDate"
+                v-model="ruleForm.startDate"
                 type="date"
                 placeholder="点击图标选择日期"
-                clearable="true"
+                clearable=ture
                 :disabledDate="disabledDate"
                 :size="size"
               >
               </el-date-picker>
-            </el-config-provider>
+        
           </el-form-item>
         </el-col>
 
         <el-col :span="8">
-          <el-form-item label="委托结束日期 :">
-            <el-config-provider :locale="locale">
+          <el-form-item label="委托结束日期 :" prop="endDate">
+           
               <el-date-picker
-                v-model="endDate"
+                v-model="ruleForm.endDate"
                 type="date"
                 placeholder="点击图标选择日期"
-                clearable="true"
+                clearable=true
                 :disabledDate="disabledEndDate"
                 :size="size"
               >
               </el-date-picker>
-            </el-config-provider>
+           
           </el-form-item>
         </el-col>
 
         <el-col :span="8">
-          <el-form-item label="检测类型 :">
-            <el-select v-model="ognization" clearable placeholder="--请选择--">
+          <el-form-item label="检测类型 :" prop="orgnization">
+            <el-select v-model="ruleForm.ognization" clearable=true placeholder="--请选择--">
               <el-option
                 v-for="item in og_options"
                 :key="item.value"
@@ -63,7 +63,7 @@
         <el-input v-model="ruleForm.id" placeholder="请输入委托编号" />
       </el-form-item>
 
-      <el-form-item label="委托单位 :">
+      <el-form-item label="委托单位 :" prop="name">
             <el-input
               v-model="ruleForm.name"
               placeholder="请输入委托单位名称"
@@ -87,9 +87,9 @@
 </template>
 
 <script lang="ts" setup>
-import { reactive, ref } from "vue";
+import { reactive, ref, getCurrentInstance } from "vue";
 import type { FormInstance, FormRules } from "element-plus";
-import { useRouter } from "vue-router"
+import { useRouter, useRoute } from "vue-router"
 
 const formSize = ref("default");
 const ruleFormRef = ref<FormInstance>();
@@ -97,40 +97,43 @@ const ruleFormRef = ref<FormInstance>();
 const ruleForm = reactive({
   name: "",
   id:"",
+  orgnization:"",
+  startDate:"",
+  endDate:""
 });
 
 const rules = reactive<FormRules>({
-  name: [
-    { required: true, message: "Please input Activity name", trigger: "blur" },
-    { min: 3, max: 5, message: "Length should be 3 to 5", trigger: "blur" },
-  ],
-
-  id: [
-    { required: true, message: "Please input Activity name", trigger: "blur" },
-    { min: 3, max: 5, message: "Length should be 3 to 5", trigger: "blur" },
-  ],
 });
 
 const router = useRouter();
+const currentInstance= getCurrentInstance();
+const{ $axios } = currentInstance.appContext.config.globalProperties;
+
+import { getRslt } from "@/api/apiRequest.ts"
 
 const submitForm = async (formEl: FormInstance | undefined) => {
   if (!formEl) return;
   await formEl.validate((valid, fields) => {
     if (valid) {
+      const { name, id, orgnization, startDate, endDate } = ruleForm;
+      const data = getRslt(ruleForm);
       console.log("submit!");
+      console.log("data" , data);
+
       router.push({ 
-        path: '/searchTrust/result',
-        name: 'test'})
+        name: 'result',
+        query: { data },})
     } else {
       console.log("error submit!", fields);
     }
   });
 };
 
+
 const resetForm = (formEl: FormInstance | undefined) => {
   if (!formEl) return;
   formEl.resetFields();
-  formEl.dateValue = "";
+  
 };
 
 const ognization = ref("");
@@ -172,19 +175,21 @@ const disabledEndDate = (time: Date) => {
 <style scoped lang="scss">
 .submitBtn {
   position: absolute;
-  left: 50%;
-  transform: translate(-50%);
+  left: 48%;
+  transform: translate(-48%);
   align-items: center;
   justify-content: center;
-  overflow: hidden;
+  margin-top: 16px;
+
 }
 
 .resetBtn {
   position: absolute;
-  left: 55%;
-  transform: translate(-55%);
+  left: 56%;
+  transform: translate(-56%);
   align-items: center;
   justify-content: center;
-  overflow: hidden;
+  margin-top: 16px;
+
 }
 </style>

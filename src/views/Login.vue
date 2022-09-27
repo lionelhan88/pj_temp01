@@ -1,24 +1,34 @@
 
 <script setup lang="ts">
-import { reactive, ref } from 'vue'
+import { reactive, ref, getCurrentInstance } from 'vue'
 import type { FormInstance, FormRules } from 'element-plus'
 import myFooter from './footer'
+import { useRouter, useRoute } from "vue-router"
+
+const router = useRouter();
+const route = useRoute();
 
 const formSize = ref('default')
 const ruleFormRef = ref<FormInstance>()
 const ruleForm = reactive({
-  name: '',
-  password:''
+  userName: 't9990001',
+  pwd:'1'
 })
 
+const currentInstance = getCurrentInstance();
+const { $axios } = currentInstance.appContext.config.globalProperties;
+import { loginAction } from '@/api/apiRequest.ts'
+
+const dialogVisible = ref(false)
+
 const rules = reactive<FormRules>({
-  name: [
+  userName: [
     { required: true, message: '请输入登录账号', trigger: 'blur' },
     { min: 3, max: 15, message: '账号长度必须在3-15个字符内', trigger: 'blur' },
   ],
-  password: [
+  pwd: [
     { required: true, message: '请输入登录密码', trigger: 'blur' },
-    { min: 6, max: 15, message: '密码长度必须在6-15个字符内', trigger: 'blur' },
+    { min: 1, max: 15, message: '密码长度必须在6-15个字符内', trigger: 'blur' },
   ],
   
 })
@@ -28,6 +38,28 @@ const submitForm = async (formEl: FormInstance | undefined) => {
   await formEl.validate((valid, fields) => {
     if (valid) {
       console.log('submit!')
+
+      const { userName, pwd } = ruleForm
+      const data = loginAction(ruleForm);
+      
+      data.then( response => {
+        const a = response.data
+        console.log("test " + a.code)
+
+        if(a.code == 200 ){
+          console.log("yes")
+          router.push({ 
+            name: "home",
+          }); 
+        }else{
+          dialogVisible.value = true;
+          formEl.resetFields()
+          console.log("no")
+        }
+      })
+
+      console.log(data)
+     
     } else {
       console.log('error submit!', fields)
     }
@@ -39,10 +71,7 @@ const resetForm = (formEl: FormInstance | undefined) => {
   formEl.resetFields()
 }
 
-const options = Array.from({ length: 10000 }).map((_, idx) => ({
-  value: `${idx + 1}`,
-  label: `${idx + 1}`,
-}))
+
 
 </script>
 
@@ -64,16 +93,16 @@ const options = Array.from({ length: 10000 }).map((_, idx) => ({
       :model="ruleForm" size="formSize">
 
       <!-- 输入用户名-->
-        <el-form-item label="账号" prop="name" >
-          <el-input label="inputname" v-model="ruleForm.name"
+        <el-form-item label="账号" prop="userName" >
+          <el-input label="inputname" v-model="ruleForm.userName"
             placeholder="请输入登录账号" prefix-icon="el-icon-user">
             console.log(ruleForm.username)
           </el-input>
         </el-form-item>
 
       <!-- 输入密码-->
-         <el-form-item label="密码" prop="password">
-          <el-input v-model="ruleForm.password" type="password" 
+         <el-form-item label="密码" prop="pwd">
+          <el-input v-model="ruleForm.pwd" type="password" 
           placeholder="请输入登录账号" prefix-icon="el-icon-lock"/>
         </el-form-item>
 
@@ -82,10 +111,22 @@ const options = Array.from({ length: 10000 }).map((_, idx) => ({
         <el-button type="info" class="btnInfo" @click="resetForm(ruleFormRef)">重置</el-button>
     
       </el-form>
-      
     </div>
-        
-    
+
+    <el-dialog
+        v-model="dialogVisible"
+        title="登录错误"
+        width="30%"
+      >
+        <span>请输入正确的用户名和密码</span>
+        <template #footer>
+          <span class="dialog-footer">
+            <el-button type="primary" @click="dialogVisible = false"
+              >确认</el-button
+            >
+          </span>
+        </template>
+      </el-dialog>
 
   </div>
 </template>

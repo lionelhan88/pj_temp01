@@ -1,93 +1,94 @@
-<script setup lang="ts"></script>
-
 <template>
-  <div class="home_container">
+  <div class="common-layout">
     <el-container>
-      <!--头部区域-->
-      <el-header>
-        <div>
-          <span class="title">欢迎使用户外广告和招牌设施安全检测管理系统</span>
-        </div>
-
-        <el-button type="info" @click="logout">退出</el-button>
-      </el-header>
-
-      <!--侧边区域-->
-      <el-container class="sideBar">
-        <el-aside width="150px">
-          <!--侧边栏菜单区域-->
-          <el-menu
-            active-text-color="#8B4726"
-            background-color="#87CEFA"
-          >
-            <el-menu-item index="2">
-            <i class = "el-icon-document-add"></i>
-              <router-link :to="{path: '/home/createTrust'}">创建委托信息</router-link>
-            </el-menu-item>
-            <el-menu-item index="4">
-            <i class = "el-icon-search"></i>
-              <router-link :to="{path: '/home/searchTrust'}">查询委托信息</router-link>
-            </el-menu-item>
-           
-          </el-menu>
-        </el-aside>
-
+      <el-aside width="200px">
+        <!--侧边栏菜单-->
+            <el-menu
+              class="el-menu"
+              default-active="1"
+              background-color="#2F4F4F"
+              text-color = "#FFFFF0"
+              :router="true"
+            >
+              <el-menu-item index="1" :route="{path:'/home/createTrust'}">
+                  <el-icon><document-add /></el-icon>
+                  <span>创建委托信息</span>
+              </el-menu-item>
+            
+              <el-menu-item index="2" :route="{path:'/home/searchTrust'}">
+                <el-icon><search /></el-icon>
+                <span>查询委托信息</span>
+              </el-menu-item>
+            </el-menu>
+      </el-aside>
+      
+      
+      <el-container> 
+        <!--头部区域-->
+        <el-header class="header">
+          <span class="title">欢迎使用户外广告和招牌设施安全检测管理系统</span></el-header>
+        
         <!--主页区域-->
+
         <el-main>
-     
-        <!-- 路由占位符-->
-        <router-view></router-view>
+          <router-view></router-view>
         </el-main>
+        
       </el-container>
     </el-container>
   </div>
 </template>
 
-<style scoped lang="scss">
-.home_container {
-  height: 100%;
-}
-
-.el-header {
-  background-color: rgb(70 130 180);
-  height: 100px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 30px;
-  font-weight: bold;
-}
-
-.el-button{
-    background-color: rgb(240 255 240);
-    color:black;
-    font-weight: bold;
-}
-
-.title{
-    justify-content: space-between;
-    position: absolute;
-    left: 50%;
-    transform: translate(-50%,-50%);
-    display: flex;
-}
-
-.el-aside {
-  background-color: rgb(135 206 250);
+<style >
+  .common-layout{
+    background-color: rgb(240 248 255);
+  }
   
-  width: 180px;
-}
+  .el-aside{
+    background-color: rgb(47 79 79);
+    
+  }
 
-.sideBar{
-  height: 90vh;
-}
+  .el-menu{
+      border-right: none;
+      height:100vh;
+      font-size: 40px;
+    }
 
-.el-menu-item{
-  font-size: 16px;
-  font-weight: bold;
-}
+  
+  .el-main{
+    margin:8px;
+    background-color: rgb(255 255 240);
+    height: 90vh;
+  }
+  
+  .header{
+    background-color: rgb(47 79 79);
+    
+  }
+  
+  .title{
+    position: absolute;
+    justify-content: center;
+    display: flex;
+    left: 32%; 
+    font-size: 32px;
+    margin-top: 5px;
+    color: rgb(255 255 240);
+    
+  }
+  
 
-.el-main{
-  background-color: rgb(240 255 240);
-}
+
 </style>
+
+<script lang="ts" setup>
+import {
+  DocumentAdd,
+  Search,
+} from '@element-plus/icons-vue'
+
+
+</script>
+
+

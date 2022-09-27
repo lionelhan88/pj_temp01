@@ -9,21 +9,69 @@
       :size="formSize"
       status-icon
     >
-      <el-form-item label="委托编号 :">
-        <el-input
-          v-model="ruleForm.name"
-          placeholder="完成以下表单后，由系统自动生成"
-          disabled
-        />
-      </el-form-item>
+      <el-row>
+        <el-col :span="8">
+          <el-form-item label="委托编号 :" style="width:340px">
+            <el-input
+              v-model="ruleForm.entrustmentInfoVo.entrustmentNo"
+              placeholder="完成表单后，系统自动生成"
+              disabled
+            />
+          </el-form-item>
+        </el-col>
+
+        <el-col :span="8">
+          <el-form-item label="设施名称:" prop="disabledItem">
+            <el-input v-model="ruleForm.disabledItem"  style="width:220px" disabled />
+          </el-form-item>
+        </el-col>
+
+        <el-col :span="8">
+          <el-button type="primary" @click="searchFacility" style="margin-left:250px"
+            >选择设施</el-button
+          >
+        </el-col>
+      </el-row>
 
       <el-row>
+        <el-col :span="8">
+          <el-form-item label="设施编号:" prop="disabledItem" >
+            <el-input v-model="ruleForm.disabledItem" style="width:220px" disabled />
+          </el-form-item>
+        </el-col>
+
+        <el-col :span="8">
+          <el-form-item label="设施样式:" prop="disabledItem" >
+            <el-input v-model="ruleForm.disabledItem" style="width:220px" disabled/>
+          </el-form-item>
+        </el-col>
+
+        <el-col :span="8">
+          <el-form-item label="行政区域:" prop="disabledItem" >
+            <el-input v-model="ruleForm.disabledItem" style="width:220px" disabled />
+          </el-form-item>
+        </el-col>
+      </el-row>
+
+      <el-row>
+        <el-col :span="8">
+          <el-form-item label="店铺名称:" prop="disabledItem" >
+            <el-input v-model="ruleForm.disabledItem" style="width:220px" disabled/>
+          </el-form-item>
+        </el-col>
+
+        <el-col :span="8">
+          <el-form-item label="设施地点:" prop="disabledItem" >
+            <el-input v-model="ruleForm.disabledItem" style="width:220px" disabled/>
+          </el-form-item>
+        </el-col>
+
         <el-col :span="8"
           ><div class="grid-content ep-bg-purple" />
           <el-form-item label="委托日期 :" prop="entrustDate">
             <el-config-provider :locale="locale">
               <el-date-picker
-                v-model="ruleForm.entrustDate"
+                v-model="ruleForm.entrustmentInfoVo.entrustDate"
                 type="date"
                 placeholder="点击图标选择日期"
                 clearable="true"
@@ -34,10 +82,12 @@
             </el-config-provider>
           </el-form-item>
         </el-col>
+      </el-row>
 
+      <el-row>
         <el-col :span="8"
           ><div class="grid-content ep-bg-purple" />
-          <el-form-item label="委托开始日期 :" prop="entrustStartDate">
+          <el-form-item label="检测开始日期 :" prop="entrustStartDate">
             <el-config-provider :locale="locale">
               <el-date-picker
                 v-model="ruleForm.entrustStartDate"
@@ -53,7 +103,7 @@
         </el-col>
 
         <el-col :span="8">
-          <el-form-item label="委托结束日期 :" prop="entrustEndDate">
+          <el-form-item label="检测结束日期 :" prop="entrustEndDate">
             <el-config-provider :locale="locale">
               <el-date-picker
                 v-model="ruleForm.entrustEndDate"
@@ -67,18 +117,16 @@
             </el-config-provider>
           </el-form-item>
         </el-col>
-      </el-row>
 
-      <el-row>
         <el-col :span="8">
-          <el-form-item label="检测类型 :" prop="orgnization">
+          <el-form-item label="检测类型 :" prop="detectionType">
             <el-select
-              v-model="ruleForm.orgnization"
+              v-model="ruleForm.entrustmentInfoVo.detectionType"
               clearable
               placeholder="--请选择--"
             >
               <el-option
-                v-for="item in og_options"
+                v-for="item in detectionType_options"
                 :key="item.value"
                 :label="item.label"
                 :value="item.value"
@@ -86,12 +134,14 @@
             </el-select>
           </el-form-item>
         </el-col>
+      </el-row>
 
+      <el-row>
         <el-col :span="8">
           <el-form-item label="设施类型 :" prop="eqpType">
             <el-select
               v-model="ruleForm.eqpType"
-              clearable
+              clearable=true
               placeholder="--请选择--"
             >
               <el-option
@@ -103,36 +153,71 @@
             </el-select>
           </el-form-item>
         </el-col>
+
+        <el-col :span="8">
+          <el-form-item label="检测方法 :" prop="testMethodsId" >
+            <el-select
+              v-model="ruleForm.testMethodsId"
+              multiple
+              collapse-tags
+              collapse-tags-tooltip
+              placeholder="请选择"
+              style="width: 240px"
+              @change="handleSelect" 
+            >
+              <el-checkbox-group v-model="ruleForm.testMethodsId">
+              
+              <el-option
+                v-for="item in test_options"
+                :key="item.id"
+                :label="item.name"
+                :value="item.id"
+              >
+               
+                </el-option>
+              </el-checkbox-group>
+            </el-select>
+          </el-form-item>
+        </el-col>
       </el-row>
 
-      <el-form-item label="检测方法 :" >
-        <el-select v-model="testOption" clearable placeholder="--请选择--">
-          <el-option
-            v-for="item in test_options"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
-          />
-        </el-select>
-      </el-form-item>
+      <el-row>
+        <el-col :span="12">
+          <el-form-item label="委托单位 :" prop="client">
+            
+            <el-input v-model="ruleForm.entrustmentInfoVo.client" placeholder="请输入委托单位名称" />
+          </el-form-item>
+        </el-col>
 
-      <el-form-item label="委托单位 :" prop="client">
-        <el-input v-model="ruleForm.client" placeholder="请输入委托单位名称" />
-      </el-form-item>
+        <el-col :span="12">
+          <el-form-item label="监理单位 :" prop="supervisionCompany">
+            <el-input
+              v-model="ruleForm.supervisionCompany"
+              placeholder="请输入监理单位名称"
+            />
+          </el-form-item>
+        </el-col>
+      </el-row>
 
-      <el-form-item label="设计单位 :" prop="designCompany">
-        <el-input
-          v-model="ruleForm.designCompany"
-          placeholder="请输入设计单位名称"
-        />
-      </el-form-item>
+      <el-row>
+        <el-col :span="12">
+          <el-form-item label="设计单位 :" prop="designCompany">
+            <el-input
+              v-model="ruleForm.designCompany"
+              placeholder="请输入设计单位名称"
+            />
+          </el-form-item>
+        </el-col>
 
-      <el-form-item label="监理单位 :" prop="supervisionCompany">
-        <el-input
-          v-model="ruleForm.supervisionCompany"
-          placeholder="请输入监理单位名称"
-        />
-      </el-form-item>
+        <el-col :span="12">
+          <el-form-item label="施工单位 :" prop="disabledItem">
+            <el-input
+              v-model="ruleForm.disabledItem"
+              disabled 
+            />
+          </el-form-item>
+        </el-col>
+      </el-row>
 
       <el-form-item label="牌面底标高(m):" prop="height">
         <el-input
@@ -156,9 +241,7 @@
           default-expand-all
           node-key="id"
           highlight-current
-       
           check-on-click-node
-     
         />
 
         
@@ -182,38 +265,48 @@
       >
     </el-form>
   </div>
+
 </template>
 
 <script lang="ts" setup>
-import { reactive, ref } from "vue";
-import type { FormInstance, FormRules, ElTree } from "element-plus";
+import { reactive, ref, getCurrentInstance } from "vue";
+import type { FormInstance, FormRules, ElTree, ElMessageBox } from "element-plus";
 import type Node from "element-plus/es/components/tree/src/model/node";
+import { useRouter, useRoute } from "vue-router"
 
 const formSize = ref("default");
 const ruleFormRef = ref<FormInstance>();
 
 const ruleForm = reactive({
-  entrustDate: "2022-09-30",
-  entrustStartDate: "2022-09-30",
-  entrustEndDate: "2022-09-30",
+
+  entrustStartDate: "2022-09-30 01:01:01",
+  entrustEndDate: "2022-09-30 01:01:01",
   orgnization: "asd",
   eqpType: "asd",
-  client: "asd",
   designCompany: "asd",
   supervisionCompany: "asd",
   height: 12,
-  square: 23,
-  testItemsId: [],
+  square: 1,
+  testItemsId: [2,3,1,4],
+  testMethodsId: [1,2,3,4],
+  facilityNo: "312321",
+  facilityName: "afasf",
+  facilityCategory: 12,
+  districtCode:"12321",
+  constructionCopmany:"asdfa",
+  detailedAddress:"adsfas",
+  shopName:"123",
+  entrustmentInfoVo:{
+    client: "asd",
+    detectionType:1,
+    entrustmentNo: "",
+    entrustDate: "2022-09-30 01:01:01",
+}
+  
 });
 
 const rules = reactive<FormRules>({
-  entrustDate: [
-    {
-      required: true,
-      message: "请选择委托日期",
-      trigger: "blur",
-    },
-  ],
+  
   entrustStartDate: [
     {
       required: true,
@@ -242,13 +335,7 @@ const rules = reactive<FormRules>({
       trigger: "blur",
     },
   ],
-  client: [
-    {
-      required: true,
-      message: "请输入正确的委托单位名称",
-      trigger: "blur",
-    },
-  ],
+  
   designCompany: [
     {
       required: true,
@@ -286,15 +373,47 @@ const rules = reactive<FormRules>({
       message: "请选择检测项目",
       trigger: "blur",
     },
-  ]
+  ],
+
+  disabledItem: [
+    {
+      required: false,
+      message: "请选择设施",
+      trigger: "blur",
+    },
+  ],
 });
+
+const router = useRouter();
+const route = useRoute();
+
+const currentInstance = getCurrentInstance();
+const { $axios } = currentInstance.appContext.config.globalProperties;
+import { getFacilities, createEntrust } from '@/api/apiRequest.ts'
+
+const searchFacility = () => {
+  const { square } = ruleForm
+  const data = getFacilities(ruleForm);
+  console.log("button hit !!" + data.remarks);
+  router.push({ 
+    name: 'searchFacilities',
+    query: { data },})
+}
+
 
 const submitForm = async (formEl: FormInstance | undefined) => {
   if (!formEl) return;
   await formEl.validate((valid, fields) => {
     if (valid) {
-      
-      console.log("submit!" + formEl);
+      const { client, entrustmentNo, entrustDate, detectionType } = ruleForm.entrustmentInfoVo;
+      const { entrustStartDate, entrustEndDate,
+              orgnization, eqpType,  designCompany, supervisionCompany, height,
+              square, testItemsId, testMethodsId, facilityNo , facilityName, facilityCategory,
+              districtCode, constructionCopmany, detailedAddress, shopName } = ruleForm;
+
+      const data = createEntrust(ruleForm);
+      console.log("submit! " + ruleForm.entrustmentInfoVo.client + " " + 
+      ruleForm.entrustmentInfoVo.entrustDate + " " + ruleForm.entrustmentInfoVo.detectionType);
     } else {
       console.log("error submit!", fields);
     }
@@ -304,6 +423,7 @@ const submitForm = async (formEl: FormInstance | undefined) => {
 const resetForm = (formEl: FormInstance | undefined) => {
   if (!formEl) return;
   formEl.resetFields();
+  formEl.testMethodsId = "--请选择--"
   formEl.dateValue = "";
 };
 
@@ -313,38 +433,70 @@ const disabledDate = (time: Date) => {
   return time.getTime() + 3600 * 1000 * 24 < Date.now();
 };
 
-const ognization = ref("");
-const og_options = [
-  {
-    value: "自主商户",
-    label: "自主商户",
+
+let isIndeterminate = 'false';
+const testMethodsId = ref([]);
+
+const handleSelect = () => {
+    const checkedCount = value.length;
+		testMethodsId = ref(value);
+    this.isIndeterminate = checkedCount > 0 && checkedCount < this.options.length;
+}
+const test_options = [
+   {
+    id: 1,
+    name: "《户外广告设施设置技术规范》 DB31/283-2015",
   },
   {
-    value: "市局抽检",
+    id: 2,
+    name: '《户外招牌设置技术规范》 DB31/T 977-2016',
+  },
+  {
+    id: 3,
+    name: '《户外广告和招牌设施安全检测要求》 DB31/T 1289-2021',
+  },
+  {
+    id: 4,
+    name: '《上海市户外广告和招牌设施安全检测规范（2021版）》',
+  },
+  {
+    id: 5,
+    name: '《霓虹灯安装规范》 GB 19653-2005',
+  }
+];
+
+const detectionType = ref();
+const detectionType_options = [
+  {
+    value: 1,
+    label: "商户自助",
+  },
+  {
+    value: 2,
     label: "市局抽检",
   },
   {
-    value: "区局抽检",
-    label: "区局抽检",
+    value: 3,
+    label: "局局抽检",
   },
   {
-    value: "街道抽检",
+    value: 4,
     label: "街道抽检",
   },
   {
-    value: "其他",
+    value: 5,
     label: "其他",
   },
-];
+]
 
 const eqpType = ref("");
 const eqp_options = [
   {
-    value: "户外招牌",
+    value: 1,
     label: "户外招牌",
   },
   {
-    value: "户外广告",
+    value: 2,
     label: "户外广告",
   },
 ];
@@ -355,29 +507,7 @@ const disabledEndDate = (time: Date) => {
   return time.getTime() < Date.now();
 };
 
-const testOption = ref("");
-const test_options = [
-  {
-    value: "placeholder1",
-    label: "placeholder1",
-  },
-  {
-    value: "placeholder2",
-    label: "placeholder2",
-  },
-  {
-    value: "placeholder3",
-    label: "placeholder3",
-  },
-  {
-    value: "placeholder4",
-    label: "placeholder4",
-  },
-  {
-    value: "placeholder5",
-    label: "placeholder5",
-  },
-];
+
 
 interface Tree {
   id: number;
@@ -698,6 +828,10 @@ const checkList: Tree[] = [
   margin-top: 10px;
 }
 
+.dialog-footer button:first-child {
+  margin-right: 10px;
+}
+
 .el-tree {
   width: 100%;
   overflow: scroll;
@@ -716,7 +850,6 @@ const checkList: Tree[] = [
     }
   }
 }
-
 </style>
 
 <!-- ================================================================ -->

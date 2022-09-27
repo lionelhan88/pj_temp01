@@ -1,31 +1,11 @@
 <template>
   <div>
-    <el-container class="home_container">
-      <!--头部区域-->
-      <el-header>
-        <div>
-          <span class="title">欢迎使用户外广告和招牌设施安全检测管理系统</span>
-        </div>
-      </el-header>
-
-      <!--侧边区域-->
-      <el-container class="container">
-        <el-aside>
-          <el-menu active-text-color="#8B4726" background-color="#87CEFA">
-            <el-menu-item index="2">
-              <span>项目详情</span>
-            </el-menu-item>
-          </el-menu>
-        </el-aside>
-
-        <!--主页区域-->
-        <el-main>
-          <el-descriptions class="margin-top" :column="4" border>
+    <el-descriptions class="margin-top" :column="4" border >
             <el-descriptions-item align="center">
               <template #label>
                 <div class="cell-item">委托编号</div>
               </template>
-              {{ this.tableData[0].entrustNum }}
+              {{ dddd.entrustNum }}
             </el-descriptions-item>
 
             <el-descriptions-item align="center">
@@ -217,19 +197,20 @@
           <el-button class="cancelBtn" @click="testResult()">取消</el-button>
           <el-button class="approveBtn" @click="testResult()">批准</el-button>
           <el-button class="reportBtn" @click="testResult()">报告</el-button>
-          
-        </el-main>
-      </el-container>
-    </el-container>
   </div>
 </template>
 
 <script lang="ts" setup>
 import { reactive, ref } from "vue";
 import type { FormInstance, FormRules } from "element-plus";
+import { useRoute } from "vue-router";
+
+const route = useRoute();
 
 const formSize = ref("default");
 const ruleFormRef = ref<FormInstance>();
+
+const dddd = route.query;
 
 const tableData = [
   {
@@ -260,47 +241,6 @@ const resetForm = (formEl: FormInstance | undefined) => {
 </script>
 
 <style scoped lang="scss">
-.home_container {
-  height: 100%;
-}
-
-.el-header {
-  height: 100px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 30px;
-  font-weight: bold;
-  background-color: rgb(70 130 180);
-}
-
-.title {
-  justify-content: space-between;
-  position: absolute;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  display: flex;
-}
-
-.el-aside {
-  background-color: rgb(135 206 250);
-  width: 180px;
-  height: 100%;
-}
-
-.container {
-  height: 90vh;
-}
-
-.el-menu-item {
-  font-size: 16px;
-  font-weight: bold;
-}
-
-.el-main {
-  background-color: rgb(240 255 240);
-}
-
 .editBtn {
   margin-top: 50px;
   position: relative;
