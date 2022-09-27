@@ -8,6 +8,7 @@ const router = useRouter();
 const route = useRoute();
 
 const formSize = ref('default')
+const dialogVisible = ref(false)
 const ruleFormRef = ref<FormInstance>()
 const ruleForm = reactive({
   userName: 't9990001',
@@ -32,8 +33,6 @@ const rules = reactive<FormRules>({
 const currentInstance = getCurrentInstance();
 const { $axios } = currentInstance.appContext.config.globalProperties;
 import { loginAction } from '@/api/apiRequest.ts'
-
-const dialogVisible = ref(false)
 
 
 //================================= 登录及重置按钮 ====================================
@@ -107,6 +106,7 @@ const resetForm = (formEl: FormInstance | undefined) => {
       </el-form>
     </div>
 
+    <!-- 登录失败弹窗 -->
     <el-dialog
         v-model="dialogVisible"
         title="登录错误"
