@@ -3,6 +3,7 @@ import LoginVue from '../views/Login.vue'
 import Home from '../views/Home.vue'
 import Evaluation from '../views/Evaluation.vue'
 import Approval from '../views/Approval.vue'
+import Report from '../views/Report.vue'
 import test from '../views/test.vue'
 import { resultProps } from 'element-plus'
 import SearchFacilitiesVue from '../views/SearchFacilities.vue'
@@ -51,6 +52,11 @@ const routes: Array<RouteRecordRaw> = [
         path: '/approval',
         name: 'approval',
         component: Approval
+      },
+      {
+        path: '/report',
+        name: 'report',
+        component: Report
       },
     ]
   },

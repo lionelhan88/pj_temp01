@@ -5,7 +5,7 @@
       :model="ruleForm"
       :rules="rules"
       label-width="120px"
-      class="demo-ruleForm"
+      class="ruleForm"
       :size="formSize"
       status-icon
       router
@@ -14,10 +14,10 @@
       <el-row>
         <el-col :span="8"
           ><div class="grid-content ep-bg-purple" />
-          <el-form-item label="委托开始日期 :" prop="startDate">
-           
+          <el-form-item label="委托开始日期 :" prop="entrustmentStartDate">
+
               <el-date-picker
-                v-model="ruleForm.startDate"
+                v-model="ruleForm.entrustmentStartDate"
                 type="date"
                 placeholder="点击图标选择日期"
                 clearable=ture
@@ -30,10 +30,10 @@
         </el-col>
 
         <el-col :span="8">
-          <el-form-item label="委托结束日期 :" prop="endDate">
+          <el-form-item label="委托结束日期 :" prop="entrustmentEndDate">
            
               <el-date-picker
-                v-model="ruleForm.endDate"
+                v-model="ruleForm.entrustmentEndDate"
                 type="date"
                 placeholder="点击图标选择日期"
                 clearable=true
@@ -46,8 +46,8 @@
         </el-col>
 
         <el-col :span="8">
-          <el-form-item label="检测类型 :" prop="orgnization">
-            <el-select v-model="ruleForm.ognization" clearable=true placeholder="--请选择--">
+          <el-form-item label="检测类型 :" prop="detectionType">
+            <el-select v-model="ruleForm.detectionType" clearable=true placeholder="--请选择--">
               <el-option
                 v-for="item in og_options"
                 :key="item.value"
@@ -59,13 +59,13 @@
         </el-col>
       </el-row>
 
-      <el-form-item label="委托编号 :" prop="id" :rules="rules">
-        <el-input v-model="ruleForm.id" placeholder="请输入委托编号" />
+      <el-form-item label="委托编号 :" prop="entrustmentNo" >
+        <el-input v-model.number.trim="ruleForm.entrustmentNo" placeholder="请输入委托编号" />
       </el-form-item>
 
-      <el-form-item label="委托单位 :" prop="name">
+      <el-form-item label="委托单位 :" prop="client">
             <el-input
-              v-model="ruleForm.name"
+              v-model="ruleForm.client"
               placeholder="请输入委托单位名称"
             />
           </el-form-item>
@@ -82,47 +82,81 @@
         >重置</el-button
       >
     </el-form>
-    <router-view></router-view>
+
+    <el-dialog
+      v-model="dialogVisible"
+      title="注意"
+      width="30%"
+    >
+      <div class="content">委托编号或者委托单位不能为空</div>
+
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button type="primary" @click="dialogVisible = false"> 确定</el-button>
+        </span>
+      </template>
+    </el-dialog>
+    
   </div>
 </template>
 
 <script lang="ts" setup>
 import { reactive, ref, getCurrentInstance } from "vue";
-import type { FormInstance, FormRules } from "element-plus";
+import type { FormInstance, FormRules, ElMessageBox } from "element-plus";
 import { useRouter, useRoute } from "vue-router"
 
 const formSize = ref("default");
 const ruleFormRef = ref<FormInstance>();
+const dialogVisible = ref(false);
+const router = useRouter();
 
 const ruleForm = reactive({
-  name: "",
-  id:"",
-  orgnization:"",
-  startDate:"",
-  endDate:""
+  client: "",
+  entrustmentNo: "",
+  entrustmentStartDate: "",
+  entrustmentEndDate: "",
+  detectionType: null,
 });
 
 const rules = reactive<FormRules>({
+//  entrustmentNo: [
+  //  {
+    //  type: "number",
+      //message: "委托编号为纯数字",
+//      trigger: "blur",
+//    },
+//  ],
 });
 
-const router = useRouter();
-const currentInstance= getCurrentInstance();
-const{ $axios } = currentInstance.appContext.config.globalProperties;
-
-import { getRslt } from "@/api/apiRequest.ts"
 
 const submitForm = async (formEl: FormInstance | undefined) => {
+
   if (!formEl) return;
   await formEl.validate((valid, fields) => {
     if (valid) {
-      const { name, id, orgnization, startDate, endDate } = ruleForm;
-      const data = getRslt(ruleForm);
-      console.log("submit!");
-      console.log("data" , data);
+      const { client, entrustmentNo, entrustmentStartDate, entrustmentEndDate, 
+              detectionType  } = ruleForm;
+              
+      if(entrustmentNo=="" && client==""){
+        dialogVisible.value = true;
+      }else{
+        console.log("submit!");
+        router.push({ 
+          name: 'result',
+          query: { 
+            client: ruleForm.client.trim(),
+            entrustmentNo: ruleForm.entrustmentNo.trim(),
+            entrustmentStartDate: ruleForm.entrustmentStartDate,
+            entrustmentEndDate: ruleForm.entrustmentEndDate,
+            detectionType: ruleForm.detectionType,
+      
+           },})
+      }
 
-      router.push({ 
-        name: 'result',
-        query: { data },})
+      
+
+     
+      
     } else {
       console.log("error submit!", fields);
     }
@@ -139,19 +173,19 @@ const resetForm = (formEl: FormInstance | undefined) => {
 const ognization = ref("");
 const og_options = [
   {
-    value: "自主商户",
-    label: "自主商户",
+    value: 1,
+    label: "商户自主",
   },
   {
-    value: "市局抽检",
+    value: 2,
     label: "市局抽检",
   },
   {
-    value: "区局抽检",
+    value: 3,
     label: "区局抽检",
   },
   {
-    value: "街道抽检",
+    value: 4,
     label: "街道抽检",
   },
   {
@@ -179,7 +213,7 @@ const disabledEndDate = (time: Date) => {
   transform: translate(-48%);
   align-items: center;
   justify-content: center;
-  margin-top: 16px;
+  margin-top: 96px;
 
 }
 
@@ -189,7 +223,20 @@ const disabledEndDate = (time: Date) => {
   transform: translate(-56%);
   align-items: center;
   justify-content: center;
-  margin-top: 16px;
+  margin-top: 96px;
 
 }
+
+.ruleForm{
+  margin: 24px;
+}
+
+.el-form-item{
+  margin-top: 40px;
+}
+
+.content{
+  letter-spacing: 1px;
+}
 </style>
+

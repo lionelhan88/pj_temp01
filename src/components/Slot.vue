@@ -1,6 +1,67 @@
 <template>
   <div>
     <el-row>
+
+      <el-col :span="8">
+        <el-descriptions class="margin-top" :column="1" border>
+          <el-descriptions-item align="right" label-align="left">
+            <template #label>
+              <div class="cell-item">
+                <el-icon :style="iconStyle">
+                  <list />
+                </el-icon>
+                面板及维护：
+              </div>
+            </template>
+            <el-tag size="small" class="cell-item_4">检测详情</el-tag>
+            <el-tag size="small" class="cell-item_2">保存</el-tag>
+          </el-descriptions-item>
+          <slot name="grade"></slot>
+          <slot name="remark"></slot>
+        </el-descriptions>
+      </el-col>
+      
+
+      <el-col :span="8">
+        <el-descriptions class="margin-top" :column="1" border>
+          <el-descriptions-item align="right" label-align="left">
+            <template #label>
+              <div class="cell-item">
+                <el-icon :style="iconStyle">
+                  <list />
+                </el-icon>
+                结构构件：
+              </div>
+            </template>
+            <el-tag size="small" class="cell-item_3">检测详情</el-tag>
+            <el-tag size="small" class="cell-item_2" >保存</el-tag>
+          </el-descriptions-item>
+          <slot name="grade"></slot>
+          <slot name="remark"></slot>
+        </el-descriptions>
+      </el-col>
+
+      <el-col :span="8">
+        <el-descriptions class="margin-top" :column="1" border>
+          <el-descriptions-item align="right" label-align="left">
+            <template #label>
+              <div class="cell-item">
+                <el-icon :style="iconStyle">
+                  <list />
+                </el-icon>
+                构架连接：
+              </div>
+            </template>
+            <el-tag size="small" class="cell-item_3" clickable>检测详情</el-tag>
+            <el-tag size="small" class="cell-item_2">保存</el-tag>
+          </el-descriptions-item>
+          <slot name="grade"></slot>
+          <slot name="remark"></slot>
+        </el-descriptions>
+      </el-col>
+    </el-row>
+
+    <el-row>
       <el-col :span="12">
         <el-descriptions class="margin-top" :column="1" border>
           <el-descriptions-item align="right" label-align="left">
@@ -28,28 +89,7 @@
                 <el-icon :style="iconStyle">
                   <list />
                 </el-icon>
-                结构构件：
-              </div>
-            </template>
-            <el-tag size="small" class="cell-item_3">检测详情</el-tag>
-            <el-tag size="small" class="cell-item_2" >保存</el-tag>
-          </el-descriptions-item>
-          <slot name="grade"></slot>
-          <slot name="remark"></slot>
-        </el-descriptions>
-      </el-col>
-    </el-row>
-
-    <el-row>
-      <el-col :span="12">
-        <el-descriptions class="margin-top" :column="1" border>
-          <el-descriptions-item align="right" label-align="left">
-            <template #label>
-              <div class="cell-item">
-                <el-icon :style="iconStyle">
-                  <list />
-                </el-icon>
-                构架连接：
+                结构复核：
               </div>
             </template>
             <el-tag size="small" class="cell-item_3">检测详情</el-tag>
@@ -60,27 +100,10 @@
         </el-descriptions>
       </el-col>
 
-      <el-col :span="12">
-        <el-descriptions class="margin-top" :column="1" border>
-          <el-descriptions-item align="right" label-align="left">
-            <template #label>
-              <div class="cell-item">
-                <el-icon :style="iconStyle">
-                  <list />
-                </el-icon>
-                面板及维护：
-              </div>
-            </template>
-            <el-tag size="small" class="cell-item_4">检测详情</el-tag>
-            <el-tag size="small" class="cell-item_2">保存</el-tag>
-          </el-descriptions-item>
-          <slot name="grade"></slot>
-          <slot name="remark"></slot>
-        </el-descriptions>
-      </el-col>
     </el-row>
 
     <el-row>
+
       <el-col :span="12">
         <el-descriptions class="margin-top" :column="1" border>
           <el-descriptions-item align="right" label-align="left">
@@ -121,24 +144,7 @@
     </el-row>
 
     <el-row>
-      <el-col :span="12">
-        <el-descriptions class="margin-top" :column="1" border>
-          <el-descriptions-item align="right" label-align="left">
-            <template #label>
-              <div class="cell-item">
-                <el-icon :style="iconStyle">
-                  <list />
-                </el-icon>
-                结构复核：
-              </div>
-            </template>
-            <el-tag size="small" class="cell-item_3">检测详情</el-tag>
-            <el-tag size="small" class="cell-item_2">保存</el-tag>
-          </el-descriptions-item>
-          <slot name="grade"></slot>
-          <slot name="remark"></slot>
-        </el-descriptions>
-      </el-col>
+      
 
       <el-col :span="12">
         <el-descriptions class="margin-top" :column="1" border>

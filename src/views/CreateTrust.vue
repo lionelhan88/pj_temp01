@@ -68,7 +68,7 @@
 
         <el-col :span="8"
           ><div class="grid-content ep-bg-purple" />
-          <el-form-item label="委托日期 :" prop="entrustDate">
+          <el-form-item label="委托日期 :" prop="entrustmentInfoVo.entrustDate">
             <el-config-provider :locale="locale">
               <el-date-picker
                 v-model="ruleForm.entrustmentInfoVo.entrustDate"
@@ -119,7 +119,7 @@
         </el-col>
 
         <el-col :span="8">
-          <el-form-item label="检测类型 :" prop="detectionType">
+          <el-form-item label="检测类型 :" prop="entrustmentInfoVo.detectionType">
             <el-select
               v-model="ruleForm.entrustmentInfoVo.detectionType"
               clearable
@@ -182,9 +182,8 @@
       </el-row>
 
       <el-row>
-        <el-col :span="12">
-          <el-form-item label="委托单位 :" prop="client">
-            
+        <el-col :span="12" >
+          <el-form-item label="委托单位 :"  prop="entrustmentInfoVo.client">
             <el-input v-model="ruleForm.entrustmentInfoVo.client" placeholder="请输入委托单位名称" />
           </el-form-item>
         </el-col>
@@ -233,7 +232,7 @@
         />
       </el-form-item>
 
-      <el-form-item label="检测项目:" >
+      <el-form-item label="检测项目:" prop="testItemsId">
         <el-tree
           ref="treeRef"
           :data="checkList"
@@ -242,9 +241,8 @@
           node-key="id"
           highlight-current
           check-on-click-node
+          v-model="ruleForm.testItemsId"
         />
-
-        
       </el-form-item>
 
       <!--提交按钮-->
@@ -266,7 +264,26 @@
     </el-form>
   </div>
 
+  <!-- 重置页面弹窗 -->
+  <el-dialog
+      v-model="dialogVisible"
+      title="重置页面"
+      width="30%"
+    >
+      <span>确认要将当前页面所有已经输入的信息清空吗？</span>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button type="primary" @click="handleClick(ruleFormRef)"
+            >确认</el-button>
+          <el-button  @click="dialogVisible = false"
+            >取消</el-button>
+        </span>
+      </template>
+    </el-dialog>
+
 </template>
+
+
 
 <script lang="ts" setup>
 import { reactive, ref, getCurrentInstance } from "vue";
@@ -274,8 +291,28 @@ import type { FormInstance, FormRules, ElTree, ElMessageBox } from "element-plus
 import type Node from "element-plus/es/components/tree/src/model/node";
 import { useRouter, useRoute } from "vue-router"
 
+
+const router = useRouter();
+const route = useRoute();
 const formSize = ref("default");
 const ruleFormRef = ref<FormInstance>();
+const dialogVisible = ref(false);
+const detectionType = ref();
+const eqpType = ref("");
+const testMethodsId = ref([]);
+const treeRef = ref<InstanceType<typeof ElTree>>();
+
+const startDate = ref("");
+const endDate = ref("");
+const dateValue = ref("");
+let isIndeterminate = 'false';
+
+interface Tree {
+  id: number;
+  label: string;
+  children?: Tree[];
+}
+
 
 const ruleForm = reactive({
 
@@ -301,12 +338,89 @@ const ruleForm = reactive({
     detectionType:1,
     entrustmentNo: "",
     entrustDate: "2022-09-30 01:01:01",
-}
+  }
   
 });
 
+
+//=================================== 网络请求 ===========================================
+const currentInstance = getCurrentInstance();
+const { $axios } = currentInstance.appContext.config.globalProperties;
+import { getFacilities, createEntrust } from '@/api/apiRequest.ts'
+
+const searchFacility = () => {
+  const { square } = ruleForm
+  const data = getFacilities(ruleForm);
+  router.push({ 
+    name: 'searchFacilities',
+    query: { data },})
+}
+
+const submitForm = async (formEl: FormInstance | undefined) => {
+  if (!formEl) return;
+  await formEl.validate((valid, fields) => {
+    if (valid) {
+      ruleForm.testItemsId = treeRef.value!.getCheckedKeys(false);
+      const { client, entrustmentNo, entrustDate, detectionType } = ruleForm.entrustmentInfoVo;
+      const { entrustStartDate, entrustEndDate,
+              orgnization, eqpType,  designCompany, supervisionCompany, height,
+              square, testItemsId, testMethodsId, facilityNo , facilityName, facilityCategory,
+              districtCode, constructionCopmany, detailedAddress, shopName } = ruleForm;
+      const data = createEntrust(ruleForm);
+      console.log("submit! " + ruleForm.testItemsId );
+
+    }else {
+      console.log("error submit!", fields);
+    }
+  });
+};
+
+
+//=================================== 点击事件 ===========================================
+
+
+const resetForm = (formEl: FormInstance | undefined) => {
+  dialogVisible.value = true;
+};
+
+const handleClick = (formEl: FormInstance | undefined) => {
+  if (!formEl) return;
+  dialogVisible.value = false;
+  formEl.resetFields();
+  formEl.testMethodsId = "--请选择--"
+  formEl.dateValue = "";
+}
+
+
+const handleSelect = () => {
+    const checkedCount = value.length;
+		testMethodsId = ref(value);
+    this.isIndeterminate = checkedCount > 0 && checkedCount < this.options.length;
+}
+
+
+const resetChecked = () => {
+  treeRef.value!.setCheckedKeys([], false);
+};
+
+const getCheckedKeys = () => {
+  console.log(treeRef.value!.getCheckedKeys(false))
+}
+
+//=================================== 日期规则 ===========================================
+
+const disabledEndDate = (time: Date) => {
+  return time.getTime() < Date.now();
+};
+
+const disabledDate = (time: Date) => {
+  return time.getTime() + 3600 * 1000 * 24 < Date.now();
+};
+
+//=================================== 表单规则 ===========================================
+
+
 const rules = reactive<FormRules>({
-  
   entrustStartDate: [
     {
       required: true,
@@ -382,66 +496,67 @@ const rules = reactive<FormRules>({
       trigger: "blur",
     },
   ],
+
+  entrustmentInfoVo: {
+    client: [
+      {required: true, message: "请输入正确的委托单位", trigger: 'blur'},
+    ],
+
+    detectionType: [
+      {required: true, message: "请选择检测类型", trigger: 'blur'},
+    ],
+
+    entrustDate: [
+      {required: true, message: "请选择委托日期", trigger: 'blur'},
+    ],
+  },
+
+  testMethodsId: {
+    required: true, message:"请选择校验方法", trigger: 'blur',
+  },
+
+  testItemsId: {
+    required: true, message:"请选择校验方法", trigger: 'blur',
+  },
+  
 });
 
-const router = useRouter();
-const route = useRoute();
+//=================================== 各类选项 ===========================================
 
-const currentInstance = getCurrentInstance();
-const { $axios } = currentInstance.appContext.config.globalProperties;
-import { getFacilities, createEntrust } from '@/api/apiRequest.ts'
+const detectionType_options = [
+  {
+    value: 1,
+    label: "商户自主",
+  },
+  {
+    value: 2,
+    label: "市局抽检",
+  },
+  {
+    value: 3,
+    label: "局局抽检",
+  },
+  {
+    value: 4,
+    label: "街道抽检",
+  },
+  {
+    value: 5,
+    label: "其他",
+  },
+]
 
-const searchFacility = () => {
-  const { square } = ruleForm
-  const data = getFacilities(ruleForm);
-  console.log("button hit !!" + data.remarks);
-  router.push({ 
-    name: 'searchFacilities',
-    query: { data },})
-}
+const eqp_options = [
+  {
+    value: 1,
+    label: "户外招牌",
+  },
+  {
+    value: 2,
+    label: "户外广告",
+  },
+];
 
-
-const submitForm = async (formEl: FormInstance | undefined) => {
-  if (!formEl) return;
-  await formEl.validate((valid, fields) => {
-    if (valid) {
-      const { client, entrustmentNo, entrustDate, detectionType } = ruleForm.entrustmentInfoVo;
-      const { entrustStartDate, entrustEndDate,
-              orgnization, eqpType,  designCompany, supervisionCompany, height,
-              square, testItemsId, testMethodsId, facilityNo , facilityName, facilityCategory,
-              districtCode, constructionCopmany, detailedAddress, shopName } = ruleForm;
-
-      const data = createEntrust(ruleForm);
-      console.log("submit! " + ruleForm.entrustmentInfoVo.client + " " + 
-      ruleForm.entrustmentInfoVo.entrustDate + " " + ruleForm.entrustmentInfoVo.detectionType);
-    } else {
-      console.log("error submit!", fields);
-    }
-  });
-};
-
-const resetForm = (formEl: FormInstance | undefined) => {
-  if (!formEl) return;
-  formEl.resetFields();
-  formEl.testMethodsId = "--请选择--"
-  formEl.dateValue = "";
-};
-
-const dateValue = ref("");
-
-const disabledDate = (time: Date) => {
-  return time.getTime() + 3600 * 1000 * 24 < Date.now();
-};
-
-
-let isIndeterminate = 'false';
-const testMethodsId = ref([]);
-
-const handleSelect = () => {
-    const checkedCount = value.length;
-		testMethodsId = ref(value);
-    this.isIndeterminate = checkedCount > 0 && checkedCount < this.options.length;
-}
 const test_options = [
    {
     id: 1,
@@ -464,66 +579,6 @@ const test_options = [
     name: '《霓虹灯安装规范》 GB 19653-2005',
   }
 ];
-
-const detectionType = ref();
-const detectionType_options = [
-  {
-    value: 1,
-    label: "商户自助",
-  },
-  {
-    value: 2,
-    label: "市局抽检",
-  },
-  {
-    value: 3,
-    label: "局局抽检",
-  },
-  {
-    value: 4,
-    label: "街道抽检",
-  },
-  {
-    value: 5,
-    label: "其他",
-  },
-]
-
-const eqpType = ref("");
-const eqp_options = [
-  {
-    value: 1,
-    label: "户外招牌",
-  },
-  {
-    value: 2,
-    label: "户外广告",
-  },
-];
-
-const startDate = ref("");
-const endDate = ref("");
-const disabledEndDate = (time: Date) => {
-  return time.getTime() < Date.now();
-};
-
-
-
-interface Tree {
-  id: number;
-  label: string;
-  children?: Tree[];
-}
-
-const treeRef = ref<InstanceType<typeof ElTree>>();
-
-const resetChecked = () => {
-  treeRef.value!.setCheckedKeys([], false);
-};
-
-const getCheckedKeys = () => {
-  console.log(treeRef.value!.getCheckedKeys(false))
-}
 
 const checkList: Tree[] = [
   {
@@ -851,100 +906,3 @@ const checkList: Tree[] = [
   }
 }
 </style>
-
-<!-- ================================================================ -->
-<!-- <el-form-item label="委托编号:">
-        <el-input
-          v-model="ruleForm.name"
-          placeholder="完成以下表单后，由系统自动生成"
-          disabled
-        />
-      </el-form-item>
-
-      <el-form-item label="委托日期:" required>
-        <el-date-picker
-          v-model="dateValue"
-          type="date"
-          placeholder="点击图标选择日期"
-          clearable="true"
-          :size="size"
-        />
-      </el-form-item>
-
-      <el-form-item label="委托单位:" required overflow="false">
-        <el-input v-model="ruleForm.name" placeholder="请输入委托单位名称" />
-      </el-form-item>
-
-      <el-form-item label="检测类型:" required>
-        <el-select v-model="ognization" clearable placeholder="--请选择--">
-          <el-option
-            v-for="item in og_options"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
-          />
-        </el-select>
-      </el-form-item>
-
-      <el-form-item label="设施类型:" required>
-        <el-select v-model="eqpType" clearable placeholder="--请选择--">
-          <el-option
-            v-for="item in eqp_options"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
-          />
-        </el-select>
-      </el-form-item>
-
-      <el-form-item label="设计单位:">
-        <el-input
-          v-model="ruleForm.designOG"
-          placeholder="请输入设计单位名称"
-        />
-      </el-form-item>
-
-      <el-form-item label="监理单位:">
-        <el-input
-          v-model="ruleForm.superviseOG"
-          placeholder="请输入监理单位名称"
-        />
-      </el-form-item>
-
-      <el-form-item label="牌面底标高(m):">
-        <el-input v-model="ruleForm.height" placeholder="请输入牌面高度" />
-      </el-form-item>
-
-      <el-form-item label="检测面积(㎡):">
-        <el-input v-model="ruleForm.square" placeholder="请输入检测面积" />
-      </el-form-item>
-
-      <el-form-item label="检测开始时间:" required>
-        <el-date-picker
-          v-model="dateValue"
-          type="date"
-          placeholder="点击图标选择日期"
-          clearable="true"
-          :size="size"
-        />
-      </el-form-item>
-
-      <el-form-item label="检测结束时间:" required>
-        <el-date-picker
-          v-model="dateValue"
-          type="date"
-          placeholder="点击图标选择日期"
-          clearable="true"
-          :disabled-date="disabledDate"
-          :size="size"
-        />
-      </el-form-item> -->
-
-<!-- 
-
-        
-      </el-row>
-
-     
-
-       -->
